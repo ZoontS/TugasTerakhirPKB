@@ -5,52 +5,34 @@
 
 using DataFrames, Statistics, StatsBase, Serialization
 
-function gini_impurity(labels)
-    counts = values(countmap(labels))
-    impurity = 1.0
-    for count in counts
-        prob = count / length(labels)
-        impurity -= prob^2
+function sumless_mean(data)
+    averages = Matrix{Float16}(zeros, 3, 4)
+    for col in axes(data, 2)
+        n = 0
+        mean = 0.0
+
+        for x in data[:, col]
+            n += 1
+            delta = x - mean
+            mean += delta / n
+        end
+        push!(averages, mean)
     end
-    return impurity
+    return averages
 end
 
-function find_best_split(data, labels)
-    best_gini = 1.0
-    best_feature = -1
-    best_threshold = -1.0
-    for feature_index in 1:size(data, 2)
-        thresholds = sort(unique(data[:, feature_index]))
-        for threshold in thresholds
-            left_data, left_labels, right_data, right_labels = split_data(data, labels, feature_index, threshold)
-            gini = (gini_impurity(left_labels) * size(left_data, 1) + gini_impurity(right_labels) * size(right_data, 1)) / size(data, 1)
-            if gini < best_gini
-                best_gini = gini
-                best_feature = feature_index
-                best_threshold = threshold
-            end
+function euclidean_distance(data, averages)
+    for col in axes(data, 2)
+        for row in axes(data, 1)
+            data[row, col] = abs(data[row, col] - averages[col])
         end
     end
-    return best_feature, best_threshold
+    return data
 end
 
-function build_tree(data, labels, depth=0, max_depth=5)
-    if depth == max_depth || length(unique(labels)) == 1
-        return mode(labels)
-    end
-    feature, threshold = find_best_split(data, labels)
-    left_data, left_labels, right_data, right_labels = split_data(data, labels, feature, threshold)
-    left = build_tree(left_data, left_labels, depth+1, max_depth)
-    right = build_tree(right_data, right_labels, depth+1, max_depth)
-    return feature, threshold, left, right
-end
-
-# Load data
 data = deserialize(open("data_9m.mat", "r"))
-data = convert(Array{Float64,2}, data)
-labels = data[:, 5]
-features = data[:, 1:4]
 
-# Build the tree
-tree = build_tree(features, labels)
+averages = sumless_mean(data)
+
+class1_ecd = euclidean_distance(class1_matrix, class1_averages)
 
