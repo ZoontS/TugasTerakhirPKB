@@ -1,5 +1,5 @@
-# Cascade Classify
+# [Cascade Classify](https://github.com/ZoontS/TugasTerakhirPKB)
 
-### Anggota Team:
+### Team Members
 - Narendra Arkan Putra Darmawan - 1313621043
 - Muhammad Ramadhan Putra Pratama - 1313621038
