@@ -145,7 +145,7 @@ function calculate_correct_prediction_averages(data, comparison, accuracies)
     averages[:, argmax(temp_accuracies)] = x4_averages
     temp_accuracies[argmax(temp_accuracies)] = 0.0
 
-    return averages, remainder_data
+    return averages
 end
 
 
@@ -171,8 +171,6 @@ println("Feature 2 Accuracy: $(accuracies[2] * 100)%")
 println("Feature 3 Accuracy: $(accuracies[3] * 100)%")
 println("Feature 4 Accuracy: $(accuracies[4] * 100)%")
 
-correct_prediction_averages, remainder_data = calculate_correct_prediction_averages(raw_data, comparison, accuracies)
+correct_prediction_averages = calculate_correct_prediction_averages(raw_data, comparison, accuracies)
 println("\nNew Averages: ")
 display(correct_prediction_averages)
-println("\nRemainder Data: ")
-display(remainder_data)
