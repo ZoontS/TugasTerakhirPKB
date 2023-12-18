@@ -3,7 +3,7 @@
 # Nama 2: Muhammad Ramadhan Putra Pratama
 # NIM 2: 1313621038
 
-using DataFrames, Statistics, StatsBase, Serialization
+using DataFrames, Statistics, Serialization
 
 function calculate_sumless_mean(data)
     averages = Matrix{Float16}(undef, 3, 4)
