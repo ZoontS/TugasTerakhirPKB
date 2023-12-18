@@ -115,15 +115,37 @@ function correct_prediction_sumless_mean(data, col)
             mean += delta / n
         end 
 
-        averages[i, col] = mean
+        averages[i, 1] = mean
     end
+
+    return averages
 end
 
 function calculate_correct_prediction_averages(data, comparison, accuracies)
-    x1, remainder_data = filter_correct_prediction(data, comparison[:, argmax(accuracies)])
-    accuracies[argmax(accuracies)] = 0.0
+    averages = Matrix{Float16}(undef, 3, 4)
+    temp_accuracies = copy(accuracies)
 
-    return x1, remainder_data
+    x1, remainder_data = filter_correct_prediction(data, comparison[:, argmax(temp_accuracies)])
+    x1_averages = correct_prediction_sumless_mean(x1, argmax(temp_accuracies))
+    averages[:, argmax(temp_accuracies)] = x1_averages
+    temp_accuracies[argmax(temp_accuracies)] = 0.0
+
+    x2, remainder_data = filter_correct_prediction(remainder_data, comparison[:, argmax(temp_accuracies)])
+    x2_averages = correct_prediction_sumless_mean(x2, argmax(temp_accuracies))
+    averages[:, argmax(temp_accuracies)] = x2_averages
+    temp_accuracies[argmax(temp_accuracies)] = 0.0
+
+    x3, remainder_data = filter_correct_prediction(remainder_data, comparison[:, argmax(temp_accuracies)])
+    x3_averages = correct_prediction_sumless_mean(x3, argmax(temp_accuracies))
+    averages[:, argmax(temp_accuracies)] = x3_averages
+    temp_accuracies[argmax(temp_accuracies)] = 0.0
+
+    x4, remainder_data = filter_correct_prediction(remainder_data, comparison[:, argmax(temp_accuracies)])
+    x4_averages = correct_prediction_sumless_mean(x4, argmax(temp_accuracies))
+    averages[:, argmax(temp_accuracies)] = x4_averages
+    temp_accuracies[argmax(temp_accuracies)] = 0.0
+
+    return averages
 end
 
 
@@ -149,10 +171,6 @@ println("Feature 2 Accuracy: $(accuracies[2] * 100)%")
 println("Feature 3 Accuracy: $(accuracies[3] * 100)%")
 println("Feature 4 Accuracy: $(accuracies[4] * 100)%")
 
-correct_prediction_averages, remainderdata = calculate_correct_prediction_averages(raw_data, comparison, accuracies)
-
+correct_prediction_averages = calculate_correct_prediction_averages(raw_data, comparison, accuracies)
+println("\nNew Averages: ")
 display(correct_prediction_averages)
-display(remainderdata)
-
-# println("\nCorrect Prediction Averages: ")
-# display(correct_prediction_averages)
